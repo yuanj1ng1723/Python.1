@@ -1,49 +1,72 @@
-# 🚀 Auto-Research-Agent: 智能深度行研系统 (Web UI 版)
+# Aeroplane Chess (飞行棋) - Python Pygame Implementation
 
-本项目是一个基于 **LangGraph** 构建的企业级多智能体自动化行业研究系统。摒弃了传统的黑盒 Agent 模式，采用**状态机（StateGraph）**精确控制业务流转。
+![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![Pygame](https://img.shields.io/badge/Library-Pygame-green.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-在最新的版本中，我们引入了 **Streamlit Web 交互界面** 和 **私有知识库 (RAG)**，并首创了 **AI 审查 + 人类主编（Human-in-the-loop）的双重审核机制**，确保最终输出的分析报告兼具 AI 的高效与人类的专业严谨。
+这是一个基于 Python 和 Pygame 开发的经典飞行棋游戏。支持人机对战，具备完整的游戏规则（起飞、跳跃、空投、击退等）以及智能 AI 决策系统。
 
-## ✨ 核心亮点 (Features)
+## ✨ 项目亮点
+- **核心逻辑完备**：严格遵循传统飞行棋规则，包括掷 6 起飞、同色跳跃、快捷航道、终点精确走位。
+- **启发式 AI**：内置贪婪策略 AI，能够根据棋局动态做出决策（优先起飞、优先击退对手、进度最优）。
+- **平滑渲染**：使用高阶坐标映射技术实现平滑的格点定位，并加入高亮脉冲、UI 实时反馈等视觉效果。
+- **跨平台兼容**：自动识别 Windows/Linux 系统中文字体，解决经典 Pygame 中文乱码问题。
 
-- **🖥️ 全新可视化工作台**：基于 Streamlit 开发的现代化 Web UI，支持会话隔离（Session Memory），支持多用户并发访问不串线。
-- **📚 本地知识库增强 (RAG)**：支持一键上传 PDF/TXT 私密资料，底层采用 `Chroma` 向量数据库与 `ZhipuAI` 文本嵌入，实现本地档案与全网公开资讯的“双剑合璧”。
-- **🕸️ LangGraph 细粒度控制**：构建了包含 `Researcher`, `Analyst`, `AI Reviewer`, `Publisher` 等角色的有向图工作流，支持审核打回的循环重写（Cyclic Loop）。
-- **🛡️ 双重审核机制**：
-  - **AI 毒舌审查官 (Reflexion)**：内部多轮自我博弈，自动打回低质量报告。
-  - **人机协作 (Human-in-the-loop)**：在研报发布的关键节点，UI 界面会自动挂起（Paused），等待人类主编通过操作台输入修改意见或一键发布。
-- **📥 自动化排版与导出**：最终报告自动翻译为英文并增加精美 Emoji 排版，支持一键下载 Markdown 文件。
+## 🎮 游戏画面
+*(建议此处上传一张游戏截图 `screenshot.png`)*
 
-## 🏗️ 架构设计 (Workflow)
+## 🛠️ 技术实现
+- **坐标系统**：采用线性索引与像素坐标映射，通过 `densify_path` 算法预处理复杂的主轨道和终点跑道。
+- **状态机管理**：通过 `wait_roll -> rolling -> choose -> animating` 状态切换，确保游戏逻辑严密。
+- **UI 交互**：基于像素级碰撞检测实现棋子选择，左侧为动态博弈区，右侧为实时状态面板。
 
-```mermaid
-graph TD
-    A[START] --> B[🕵️ Researcher Node: 联网搜索 + 本地 RAG]
-    B --> C[✍️ Analyst Node: LLM 生成分析初稿]
-    C --> D[🧐 AI Reviewer: 毒舌审查官初审]
-    D -- AI 审核不通过 (打回) --> C
-    D -- AI 审核通过 / 达最大重试次数 --> E{🙋 Human Review: 人类主编终审}
-    E -- 前端输入修改意见 (打回) --> C
-    E -- 完美直接发布 (APPROVED) --> F[📝 Publisher Node: 英文翻译与精美排版]
-    F --> G[END: 前端展示及 Markdown 下载]
+## 🚀 快速开始
+1. 确保安装了 Python 3.x
+2. 安装依赖：
+   ```bash
+   pip install pygame
 
 
-🛠️ 快速开始 (Quick Start)
-1. 环境准备
-确保你已经安装了 Python 3.9+，然后克隆项目并安装依赖：
-
+   运行游戏：
 Bash
-git clone https://github.com/你的用户名/Auto-Research-Agent.git
-cd Auto-Research-Agent
-pip install -r requirements.txt
-2. 配置环境变量
-请在项目根目录创建 .env 文件或在终端中导出以下环境变量（系统同时接入了 Anthropic/Kimi 与 智谱 AI）：
+python dice_game.py
+🤖 AI 决策逻辑
+AI 决策基于以下权重：
 
-Bash
-export ANTHROPIC_API_KEY="your-kimi-or-anthropic-key"
-export ANTHROPIC_BASE_URL="https://api.kimi.com/coding/" # (可选，如使用 Kimi)
-export ZHIPUAI_API_KEY="your-zhipu-api-key"
-3. 启动 Web 服务
-Bash
-streamlit run app.py
-启动后，在浏览器访问 http://localhost:8501 即可体验
+起飞优先级 (Highest)：只要能起飞，绝不闲置。
+攻击优先级：如果移动后能将对手送回基地，优先执行。
+进度优先级：选择最接近终点的飞机以最大化行军效率。
+📜 许可
+本项目采用 MIT License 开源。
+
+Text
+---
+### 第二部分：CSDN 博文 (详细、教学向、互动性强)
+**标题建议：** 
+*   【Python项目】从零开始：用 Pygame 打造一款带智能 AI 的飞行棋游戏（附源码）
+*   经典重温：基于 Python 状态机逻辑的智能飞行棋实现
+*   如何用 500 行 Python 代码写出带 AI 决策的飞行棋？
+**正文大纲：**
+#### 1. 引言
+小时候在纸上玩的飞行棋，能不能用 Python 还原？不仅要还原，还要给它加上“大脑”。今天分享一个基于 Pygame 开发的飞行棋项目，涵盖了坐标映射、状态机控制和启发式 AI 策略。
+#### 2. 核心功能展示
+*   **支持 4 人对战**：默认玩家为绿方，其余三方为智能 AI。
+*   **完整规则实现**：掷 6 连续投掷、同色格子跳跃、加油站飞跃、踩踏送回基地。
+*   **动态面板**：右侧实时更新各玩家状态（基地中、飞行中、已到达数）。
+#### 3. 技术难点解析
+*   **坐标系统的“升维”处理**
+    飞行棋的棋盘不是规则的正方形，有拐角、有斜线。我设计了一个 `AXIS_MAP` 坐标映射表，配合 `densify_closed_path` 函数，将原本杂乱的网格坐标转化为一维的 `progress` 进度值，大大简化了碰撞和移动判断。
+    
+*   **AI 决策大脑**
+    为了不让 AI 显得太“笨”，我实现了一个简单的启发式评估算法：
+    ```python
+    def ai_choose(self, movable):
+        # 1. 优先起飞
+        # 2. 优先击退对手 (模拟移动后的坐标碰撞)
+        # 3. 优先移动进度最前的飞机
+跨平台字体解决方案 Pygame 初学者经常遇到中文乱码。代码中通过扫描系统路径（Windows 的 msyh.ttc 或 Linux 的 NotoSans），自动匹配可用的中文字体。
+4. 代码实现要点
+(此处可以插入 1-2 段关键代码，比如执行移动逻辑 execute_move 或 绘图主循环)
+
+5. 如何运行
+只需安装 pygame 库，直接运行 dice_game.py 即可。
